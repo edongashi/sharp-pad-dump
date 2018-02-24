@@ -108,16 +108,19 @@ function convertToObject(value) {
 }
 
 function getJSON(obj) {
+  if (obj && obj.$getJSON) {
+    const result = obj.$getJSON()
+    if (typeof result !== 'undefined') {
+      return result
+    }
+  }
+
   obj = simplify(obj)
 
   if (typeof obj === 'number'
     || typeof obj === 'string'
     || typeof obj === 'boolean') {
     return obj
-  }
-
-  if (obj && obj.$dump) {
-    return obj.$dump()
   }
 
   if (obj instanceof Date) {
