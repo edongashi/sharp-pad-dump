@@ -252,6 +252,15 @@ function lineOf(trace) {
 }
 
 function dump(data, title) {
+  if (data) {
+    if (title) {
+      console.log(title)
+    }
+
+    console.log(data)
+    return Promise.resolve()
+  }
+
   const value = getJSON(data)
   if (!dump.source) {
     return dumpInternal(value, title)
@@ -267,6 +276,15 @@ function dump(data, title) {
 }
 
 function dumpSelf(title) {
+  if (dump.console) {
+    if (title) {
+      console.log(title)
+    }
+
+    console.log(this)
+    return Promise.resolve()
+  }
+
   const value = getJSON(this)
   if (!dump.source) {
     return dumpInternal(value, title)
@@ -282,6 +300,10 @@ function dumpSelf(title) {
 }
 
 dump.clear = function clear() {
+  if (dump.console) {
+    return Promise.resolve()
+  }
+
   return new Promise((resolve, reject) => {
     if (queue.length > 1) {
       const items = queue.splice(1, queue.length - 1)
@@ -304,6 +326,11 @@ dump.clear = function clear() {
 dump.html = function html(htmlString, title) {
   if (typeof htmlString !== 'string') {
     throw new Error('Invalid HTML string.')
+  }
+
+  if (dump.console) {
+    console.log(htmlString)
+    return Promise.resolve()
   }
 
   return new Promise((resolve, reject) => {
@@ -329,6 +356,7 @@ dump.html = function html(htmlString, title) {
 
 dump.port = 5255
 dump.source = true
+dump.console = false
 
 function hook(proto) {
   Object.defineProperty(proto, 'dump', {
