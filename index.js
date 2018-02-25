@@ -330,10 +330,19 @@ dump.html = function html(htmlString, title) {
 dump.port = 5255
 dump.source = true
 
-Object.prototype.dump = dumpSelf
-Number.prototype.dump = dumpSelf
-String.prototype.dump = dumpSelf
-Boolean.prototype.dump = dumpSelf
-Symbol.prototype.dump = dumpSelf
+function hook(proto) {
+  Object.defineProperty(proto, 'dump', {
+    value: dumpSelf,
+    enumerable: false,
+    configurable: true,
+    writable: true
+  })
+}
+
+hook(Object.prototype)
+hook(Number.prototype)
+hook(String.prototype)
+hook(Boolean.prototype)
+hook(Symbol.prototype)
 
 module.exports = dump
