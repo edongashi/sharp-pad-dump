@@ -194,7 +194,7 @@ function getJSON(obj) {
   return obj
 }
 
-function dumpInternal(value, title, source) {
+function enqueue(value, title, source) {
   return new Promise((resolve, reject) => {
     queue.push({
       resolve,
@@ -214,7 +214,7 @@ function dumpInternal(value, title, source) {
   })
 }
 
-function trimLine(line) {
+function trimLine(line, accessor) {
   if (typeof line !== 'string') {
     return ''
   }
@@ -222,18 +222,22 @@ function trimLine(line) {
   line = line.trim()
   let index = line.indexOf('await ')
   if (index === 0) {
-    line = line.substr(6)
+    line = line.substr(6).trim()
   }
 
-  index = line.indexOf('.dump(')
-  if (index !== -1) {
-    line = line.substr(0, index)
+  if (accessor) {
+    index = line.indexOf('.' + accessor)
+    if (index !== -1) {
+      line = line.substr(0, index)
+    }
+
+    line = line.trim()
   }
 
   return line
 }
 
-function lineOf(trace) {
+function lineOf(trace, accessor) {
   return new Promise((resolve, reject) => {
     if (!trace && !trace.stack) {
       return reject()
@@ -254,13 +258,13 @@ function lineOf(trace) {
           return reject(error)
         }
 
-        resolve(trimLine(result.line))
+        resolve(trimLine(result.line, accessor))
       })
     })
   })
 }
 
-function dump(data, title) {
+function dumpInternal(data, title, accessor, trace) {
   if (dump.console) {
     if (dump.console.data) {
       dump.console.data(data, title)
@@ -276,46 +280,21 @@ function dump(data, title) {
   }
 
   const value = getJSON(data)
-  if (!dump.source) {
-    return dumpInternal(value, title)
+  if (!dump.source || !trace) {
+    return enqueue(value, title)
   }
 
-  return lineOf(new Error())
+  return lineOf(trace, accessor)
     .then(source => {
-      return dumpInternal(value, title, source)
+      return enqueue(value, title, source)
     })
     .catch(() => {
-      return dumpInternal(value, title)
+      return enqueue(value, title)
     })
 }
 
-function dumpSelf(title) {
-  if (dump.console) {
-    if (dump.console.data) {
-      dump.console.data(this, title)
-    } else {
-      if (title) {
-        console.log(title)
-      }
-
-      console.log(this)
-    }
-
-    return Promise.resolve()
-  }
-
-  const value = getJSON(this)
-  if (!dump.source) {
-    return dumpInternal(value, title)
-  }
-
-  return lineOf(new Error())
-    .then(source => {
-      return dumpInternal(value, title, source)
-    })
-    .catch(() => {
-      return dumpInternal(value, title)
-    })
+function dump(data, title) {
+  return dumpInternal(data, title, null, new Error())
 }
 
 dump.clear = function clear() {
@@ -382,24 +361,46 @@ dump.html = function html(htmlString, title) {
   })
 }
 
+function hook(proto, name, getter) {
+  const descriptor = getter
+    ? {
+      get: function dump() {
+        dumpInternal(this, null, name, new Error())
+        return this
+      },
+      enumerable: false,
+      configurable: true
+    } : {
+      value: function dump(title) {
+        return dumpInternal(this, title, name, new Error())
+      },
+      enumerable: false,
+      configurable: true,
+      writable: true
+    }
+
+  Object.defineProperty(proto, name, descriptor)
+}
+
+function hookAll(name, getter) {
+  hook(Object.prototype, name, getter)
+  hook(Number.prototype, name, getter)
+  hook(String.prototype, name, getter)
+  hook(Boolean.prototype, name, getter)
+  hook(Symbol.prototype, name, getter)
+}
+
 dump.port = 5255
 dump.source = true
 dump.console = false
 dump.timeout = null
+dump.hook = function (name, getter = false) {
+  if (typeof name !== 'string') {
+    return
+  }
 
-function hook(proto) {
-  Object.defineProperty(proto, 'dump', {
-    value: dumpSelf,
-    enumerable: false,
-    configurable: true,
-    writable: true
-  })
+  hookAll(name, getter)
 }
 
-hook(Object.prototype)
-hook(Number.prototype)
-hook(String.prototype)
-hook(Boolean.prototype)
-hook(Symbol.prototype)
-
+dump.hook('dump')
 module.exports = dump
