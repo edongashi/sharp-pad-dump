@@ -366,7 +366,7 @@ function hook(proto, name, getter) {
     ? {
       get: function dump() {
         dumpInternal(this, null, name, new Error())
-        return this
+        return simplify(this)
       },
       enumerable: false,
       configurable: true
