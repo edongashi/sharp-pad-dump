@@ -249,7 +249,7 @@ function lineOf(trace) {
 }
 
 function dump(data, title) {
-  if (data) {
+  if (dump.console) {
     if (title) {
       console.log(title)
     }
