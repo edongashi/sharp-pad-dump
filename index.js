@@ -373,7 +373,9 @@ function hook(proto, name, getter) {
       configurable: true
     } : {
       value: function dump(title) {
-        return dumpInternal(simplify(this), title, name, new Error())
+        const simple = simplify(this)
+        dumpInternal(simple, title, name, new Error())
+        return simple
       },
       enumerable: false,
       configurable: true,
