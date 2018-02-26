@@ -215,6 +215,10 @@ function dumpInternal(value, title, source) {
 }
 
 function trimLine(line) {
+  if (typeof line !== 'string') {
+    return ''
+  }
+
   line = line.trim()
   let index = line.indexOf('await ')
   if (index === 0) {
