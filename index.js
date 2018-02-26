@@ -16,7 +16,6 @@ function sendData(data, port) {
   return new Promise((resolve, reject) => {
     const req = http.request(options, resolve)
     req.on('error', e => {
-      console.error(e)
       reject(e)
     })
 
@@ -29,7 +28,6 @@ function sendClear(port) {
   return new Promise((resolve, reject) => {
     const req = http.get(`http://localhost:${port}/clear`, resolve)
     req.on('error', e => {
-      console.error(e)
       reject(e)
     })
   })
@@ -58,7 +56,6 @@ function consume() {
       consume()
     })
     .catch(e => {
-      console.error(e)
       item.reject()
       queue.shift()
       consume()
