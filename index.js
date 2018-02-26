@@ -365,14 +365,15 @@ function hook(proto, name, getter) {
   const descriptor = getter
     ? {
       get: function dump() {
-        dumpInternal(this, null, name, new Error())
-        return simplify(this)
+        const simple = simplify(this)
+        dumpInternal(simple, null, name, new Error())
+        return simple
       },
       enumerable: false,
       configurable: true
     } : {
       value: function dump(title) {
-        return dumpInternal(this, title, name, new Error())
+        return dumpInternal(simplify(this), title, name, new Error())
       },
       enumerable: false,
       configurable: true,
