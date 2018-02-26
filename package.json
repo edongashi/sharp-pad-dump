@@ -1,6 +1,6 @@
 {
   "name": "sharp-pad-dump",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Node dump function for SharpPad",
   "main": "index.js",
   "scripts": {

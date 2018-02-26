@@ -15,6 +15,10 @@ function sendData(data, port) {
 
   return new Promise((resolve, reject) => {
     const req = http.request(options, resolve)
+    if (dump.timeout !== null) {
+      req.setTimeout(dump.timeout)
+    }
+
     req.on('error', e => {
       reject(e)
     })
@@ -27,6 +31,10 @@ function sendData(data, port) {
 function sendClear(port) {
   return new Promise((resolve, reject) => {
     const req = http.get(`http://localhost:${port}/clear`, resolve)
+    if (dump.timeout !== null) {
+      req.setTimeout(dump.timeout)
+    }
+
     req.on('error', e => {
       reject(e)
     })
@@ -354,6 +362,7 @@ dump.html = function html(htmlString, title) {
 dump.port = 5255
 dump.source = true
 dump.console = false
+dump.timeout = null
 
 function hook(proto) {
   Object.defineProperty(proto, 'dump', {
