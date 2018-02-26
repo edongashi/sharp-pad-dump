@@ -258,11 +258,16 @@ function lineOf(trace) {
 
 function dump(data, title) {
   if (dump.console) {
-    if (title) {
-      console.log(title)
+    if (dump.console.data) {
+      dump.console.data(data, title)
+    } else {
+      if (title) {
+        console.log(title)
+      }
+
+      console.log(data)
     }
 
-    console.log(data)
     return Promise.resolve()
   }
 
@@ -282,11 +287,16 @@ function dump(data, title) {
 
 function dumpSelf(title) {
   if (dump.console) {
-    if (title) {
-      console.log(title)
+    if (dump.console.data) {
+      dump.console.data(this, title)
+    } else {
+      if (title) {
+        console.log(title)
+      }
+
+      console.log(this)
     }
 
-    console.log(this)
     return Promise.resolve()
   }
 
@@ -306,6 +316,10 @@ function dumpSelf(title) {
 
 dump.clear = function clear() {
   if (dump.console) {
+    if (dump.console.clear) {
+      dump.console.clear()
+    }
+
     return Promise.resolve()
   }
 
@@ -334,7 +348,12 @@ dump.html = function html(htmlString, title) {
   }
 
   if (dump.console) {
-    console.log(htmlString)
+    if (dump.console.html) {
+      dump.console.html(htmlString, title)
+    } else {
+      console.log(htmlString)
+    }
+
     return Promise.resolve()
   }
 
