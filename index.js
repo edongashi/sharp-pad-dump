@@ -252,7 +252,7 @@ function lineOf(trace, accessor) {
       return reject()
     }
 
-    stackman.callsites(trace, (error, callsites) => {
+    stackman.callsites(trace, { sourcemap: dump.sourcemaps }, (error, callsites) => {
       if (error) {
         return reject(error)
       }
@@ -410,6 +410,7 @@ dump.port = 5255
 dump.source = true
 dump.console = false
 dump.timeout = null
+dump.sourcemaps = false
 dump.hook = function (name, getter = false) {
   if (typeof name !== 'string') {
     return
