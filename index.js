@@ -168,15 +168,15 @@ function getJSON(obj) {
       values = obj
     }
 
-    if (obj.some(item => item && typeof item === 'object')) {
+    if (values.some(item => item && typeof item === 'object')) {
       let exemplar = {}
-      obj.forEach(item => {
+      values.forEach(item => {
         Object.keys(convertToObject(item)).forEach(key => {
           exemplar[key] = null
         })
       })
 
-      const [first, ...rest] = obj
+      const [first, ...rest] = values
       exemplar = {
         ...exemplar,
         ...convertToObject(first),
