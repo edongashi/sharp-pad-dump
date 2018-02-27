@@ -266,7 +266,7 @@ function lineOf(trace, accessor) {
       const sourceContext = site.sourceContext
       if (dump.patchCallSites) {
         const isNode = site.isNode
-        site = wrapCallSite(site)
+        site = wrapCallSite(trace.__error_callsites[1])
         site.isNode = isNode
       }
 
