@@ -105,7 +105,9 @@ function simplify(value) {
 
 function convertToObject(value) {
   value = simplify(value)
-  if (value && typeof value === 'object') {
+  if (Array.isArray(value) || value instanceof Set) {
+    return { value: getJSON(value) }
+  } else if (value && typeof value === 'object') {
     return getJSON(value)
   } else {
     return { value }
@@ -157,8 +159,15 @@ function getJSON(obj) {
     }
   }
 
-  if (Array.isArray(obj)) {
-    let values = obj
+  const isSet = obj instanceof Set
+  if (Array.isArray(obj) || isSet) {
+    let values
+    if (isSet) {
+      values = Array.from(obj)
+    } else {
+      values = obj
+    }
+
     if (obj.some(item => item && typeof item === 'object')) {
       let exemplar = {}
       obj.forEach(item => {
@@ -178,7 +187,7 @@ function getJSON(obj) {
     }
 
     return {
-      $type: 'Array, node.js',
+      $type: isSet ? 'Set, node.js' : 'Array, node.js',
       $values: values
     }
   }
