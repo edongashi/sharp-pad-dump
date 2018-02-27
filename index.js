@@ -296,7 +296,7 @@ function dumpInternal(data, title, accessor, trace) {
   return lineOf(trace, accessor)
     .then(source => {
       if (typeof dump.source === 'function') {
-        source = dump.source(source, accessor)
+        source = dump.source(source, value, accessor)
       }
 
       return enqueue(value, title, source)
