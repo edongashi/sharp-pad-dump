@@ -1,6 +1,5 @@
 const http = require('http')
 const stackman = require('stackman')()
-const { wrapCallSite } = require('source-map-support')
 
 function sendData(data, port) {
   const options = {
@@ -264,9 +263,9 @@ function lineOf(trace, accessor) {
       }
 
       const sourceContext = site.sourceContext
-      if (dump.patchCallSites) {
+      if (dump.wrapCallSite) {
         const isNode = site.isNode
-        site = wrapCallSite(trace.__error_callsites[1])
+        site = dump.wrapCallSite(trace.__error_callsites[1])
         site.isNode = isNode
       }
 
@@ -419,7 +418,7 @@ dump.source = true
 dump.console = false
 dump.timeout = null
 dump.sourcemaps = false
-dump.patchCallSites = false
+dump.wrapCallSite = null
 dump.hook = function (name, getter = false) {
   if (typeof name !== 'string') {
     return

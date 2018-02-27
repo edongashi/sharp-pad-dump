@@ -1,6 +1,6 @@
 {
   "name": "sharp-pad-dump",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Node dump function for SharpPad",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,6 @@
     "url": "https://github.com/EdonGashi/sharp-pad-dump.git"
   },
   "dependencies": {
-    "source-map-support": "~0",
     "stackman": "^3.0.1"
   }
 }
