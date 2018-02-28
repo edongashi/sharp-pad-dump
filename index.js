@@ -281,6 +281,13 @@ function lineOf(trace, accessor) {
 }
 
 function dumpInternal(data, title, accessor, trace) {
+  if (typeof dump.before === 'function') {
+    const shouldDump = dump.before(data, title, accessor, trace)
+    if (shouldDump === false) {
+      return Promise.resolve()
+    }
+  }
+
   if (dump.console) {
     if (dump.console.data) {
       dump.console.data(data, title)
@@ -419,6 +426,7 @@ dump.console = false
 dump.timeout = null
 dump.sourcemaps = false
 dump.wrapCallSite = null
+dump.before = null
 dump.hook = function (name, getter = false) {
   if (typeof name !== 'string') {
     return
