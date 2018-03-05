@@ -388,6 +388,24 @@ dump.html = function html(htmlString, title) {
   })
 }
 
+function escape(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+dump.write = function write(message = '') {
+  if (dump.console) {
+    if (dump.console.write) {
+      dump.console.write(message)
+    } else {
+      console.log(message)
+    }
+
+    return Promise.resolve()
+  }
+
+  return dump.html('<div>' + escape(message) + '</div>')
+}
+
 function hook(proto, name, getter) {
   const descriptor = getter
     ? {
